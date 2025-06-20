@@ -1,8 +1,8 @@
-package org.woftnw.oakBoat;
+package org.woftnw.battlewinner;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class OakBoat extends JavaPlugin {
+public final class Battlewinner extends JavaPlugin {
 
     @Override
     public void onEnable() {

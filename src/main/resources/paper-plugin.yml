@@ -1,8 +1,8 @@
 name: OakBoat
 version: '1.0-SNAPSHOT'
-main: org.woftnw.oakBoat.OakBoat
+main: org.woftnw.battlewinner.Battlewinner
 api-version: '1.21'
-prefix: OakBoat
-authors: [ Stonley890 ]
+prefix: Battlewinner
+authors: [ BogTheMudWing ]
 description: 'A plugin for Wings of Fire: The New World that brings Battlewinner back from the dead.'
 website: https://woftnw.org
