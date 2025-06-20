@@ -1,4 +1,4 @@
-# Oak Boat
+# Battlewinner
 
  A plugin for Wings of Fire: The New World that brings Battlewinner back from the dead.
 
