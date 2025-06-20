@@ -1,4 +1,4 @@
-name: OakBoat
+name: Battlewinner
 version: '1.0-SNAPSHOT'
 main: org.woftnw.battlewinner.Battlewinner
 api-version: '1.21'
