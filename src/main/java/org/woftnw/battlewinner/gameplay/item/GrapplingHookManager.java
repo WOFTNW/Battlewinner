@@ -1,6 +1,5 @@
 package org.woftnw.battlewinner.gameplay.item;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.FishHook;
@@ -9,7 +8,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.woftnw.battlewinner.Battlewinner;
@@ -55,6 +53,7 @@ public class GrapplingHookManager implements Listener {
             FishHook hook = event.getHook();
 
             boolean isTarget = false;
+            boolean isUniversal = !(isNotUniversalGrapple(offHandItem) && isNotUniversalGrapple(mainHandItem));
 
             for (int x = -1; x < 2; x++) {
                 for (int y = -1; y < 2; y++) {
@@ -64,8 +63,7 @@ public class GrapplingHookManager implements Listener {
                         Vector vector = new Vector(x, y, z);
                         vector.multiply(0.5);
                         clone.add(vector);
-
-                        if (clone.getBlock().getType() == Material.TARGET) {
+                        if (clone.getBlock().getType() == Material.TARGET || (isUniversal && !clone.getBlock().isPassable())) {
                             isTarget = true;
                             break;
                         }
@@ -87,7 +85,14 @@ public class GrapplingHookManager implements Listener {
     private boolean isNotGrapplingHook(@NotNull ItemStack item) {
         if (item.getItemMeta() == null) return true;
         String componentString = item.getItemMeta().getAsComponentString();
-        Pattern pattern = Pattern.compile("\\[.*minecraft:custom_data=\\{.*grappling_hook: 1b.*}.*]");
+        Pattern pattern = Pattern.compile("\\[.*minecraft:custom_data=\\{.*grappling_hook:.* 1b.*}.*]");
+        return (!pattern.matcher(componentString).find());
+    }
+
+    private boolean isNotUniversalGrapple(@NotNull ItemStack item) {
+        if (item.getItemMeta() == null) return true;
+        String componentString = item.getItemMeta().getAsComponentString();
+        Pattern pattern = Pattern.compile("\\[.*minecraft:custom_data=\\{.*grappling_hook:.*\\{any_blocks:.*1b}.*}.*]");
         return (!pattern.matcher(componentString).find());
     }
 
