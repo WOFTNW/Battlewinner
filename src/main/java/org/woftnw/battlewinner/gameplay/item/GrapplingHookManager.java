@@ -1,6 +1,5 @@
 package org.woftnw.battlewinner.gameplay.item;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.FishHook;
@@ -9,7 +8,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.woftnw.battlewinner.Battlewinner;
@@ -30,7 +28,6 @@ public class GrapplingHookManager implements Listener {
         if (isNotGrapplingHook(mainHandItem) && isNotGrapplingHook(offHandItem)) return;
 
         if (event.getState().equals(PlayerFishEvent.State.FISHING)) {
-            Battlewinner.getInstance().getLogger().info("Player launched a grappling hook!");
             FishHook hook = event.getHook();
 
             BukkitRunnable hookTask = new BukkitRunnable() {
@@ -38,7 +35,6 @@ public class GrapplingHookManager implements Listener {
                 public void run() {
                     if (!hook.isValid()) this.cancel();
                     Vector velocity = hook.getVelocity();
-                    Battlewinner.getInstance().getLogger().info("Velocity: " + velocity.getX() + ", " + velocity.getY() + ", " + velocity.getZ());
                     if (velocity.getX() == 0.0 && velocity.getZ() == 0.0) {
                         // setGravity(false) doesn't work
                         // setNoPhysics(true) doesn't work
@@ -55,6 +51,7 @@ public class GrapplingHookManager implements Listener {
             FishHook hook = event.getHook();
 
             boolean isTarget = false;
+            boolean isUniversal = !(isNotUniversalGrapple(offHandItem) && isNotUniversalGrapple(mainHandItem));
 
             for (int x = -1; x < 2; x++) {
                 for (int y = -1; y < 2; y++) {
@@ -64,8 +61,7 @@ public class GrapplingHookManager implements Listener {
                         Vector vector = new Vector(x, y, z);
                         vector.multiply(0.5);
                         clone.add(vector);
-
-                        if (clone.getBlock().getType() == Material.TARGET) {
+                        if (clone.getBlock().getType() == Material.TARGET || (isUniversal && !clone.getBlock().isPassable())) {
                             isTarget = true;
                             break;
                         }
@@ -87,7 +83,14 @@ public class GrapplingHookManager implements Listener {
     private boolean isNotGrapplingHook(@NotNull ItemStack item) {
         if (item.getItemMeta() == null) return true;
         String componentString = item.getItemMeta().getAsComponentString();
-        Pattern pattern = Pattern.compile("\\[.*minecraft:custom_data=\\{.*grappling_hook: 1b.*}.*]");
+        Pattern pattern = Pattern.compile("\\[.*minecraft:custom_data=\\{.*grappling_hook:.*\\{.*}}.*]");
+        return (!pattern.matcher(componentString).find());
+    }
+
+    private boolean isNotUniversalGrapple(@NotNull ItemStack item) {
+        if (item.getItemMeta() == null) return true;
+        String componentString = item.getItemMeta().getAsComponentString();
+        Pattern pattern = Pattern.compile("\\[.*minecraft:custom_data=\\{.*grappling_hook:.*\\{.*any_blocks:1b.*}.*}.*]");
         return (!pattern.matcher(componentString).find());
     }
 
