@@ -85,14 +85,14 @@ public class GrapplingHookManager implements Listener {
     private boolean isNotGrapplingHook(@NotNull ItemStack item) {
         if (item.getItemMeta() == null) return true;
         String componentString = item.getItemMeta().getAsComponentString();
-        Pattern pattern = Pattern.compile("\\[.*minecraft:custom_data=\\{.*grappling_hook:.* 1b.*}.*]");
+        Pattern pattern = Pattern.compile("\\[.*minecraft:custom_data=\\{.*grappling_hook:.*\\{.*}}.*]");
         return (!pattern.matcher(componentString).find());
     }
 
     private boolean isNotUniversalGrapple(@NotNull ItemStack item) {
         if (item.getItemMeta() == null) return true;
         String componentString = item.getItemMeta().getAsComponentString();
-        Pattern pattern = Pattern.compile("\\[.*minecraft:custom_data=\\{.*grappling_hook:.*\\{any_blocks:.*1b}.*}.*]");
+        Pattern pattern = Pattern.compile("\\[.*minecraft:custom_data=\\{.*grappling_hook:.*\\{.*any_blocks:1b.*}.*}.*]");
         return (!pattern.matcher(componentString).find());
     }
 
