@@ -28,7 +28,6 @@ public class GrapplingHookManager implements Listener {
         if (isNotGrapplingHook(mainHandItem) && isNotGrapplingHook(offHandItem)) return;
 
         if (event.getState().equals(PlayerFishEvent.State.FISHING)) {
-            Battlewinner.getInstance().getLogger().info("Player launched a grappling hook!");
             FishHook hook = event.getHook();
 
             BukkitRunnable hookTask = new BukkitRunnable() {
@@ -36,7 +35,6 @@ public class GrapplingHookManager implements Listener {
                 public void run() {
                     if (!hook.isValid()) this.cancel();
                     Vector velocity = hook.getVelocity();
-                    Battlewinner.getInstance().getLogger().info("Velocity: " + velocity.getX() + ", " + velocity.getY() + ", " + velocity.getZ());
                     if (velocity.getX() == 0.0 && velocity.getZ() == 0.0) {
                         // setGravity(false) doesn't work
                         // setNoPhysics(true) doesn't work
