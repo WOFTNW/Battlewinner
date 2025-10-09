@@ -10,6 +10,11 @@ public final class Battlewinner extends JavaPlugin {
     private final WorldGuardAccessor worldGuardAccessor = new WorldGuardAccessor();
 
     @Override
+    public void onLoad() {
+        worldGuardAccessor.load();
+    }
+
+    @Override
     public void onEnable() {
         instance = this;
         // Plugin startup logic
