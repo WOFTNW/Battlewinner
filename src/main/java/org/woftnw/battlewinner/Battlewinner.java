@@ -1,12 +1,18 @@
 package org.woftnw.battlewinner;
 
-import org.bukkit.event.EventPriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.woftnw.battlewinner.gameplay.item.GrapplingHookManager;
+import org.woftnw.battlewinner.worldguard.WorldGuardAccessor;
 
 public final class Battlewinner extends JavaPlugin {
 
     private static Battlewinner instance;
+    private final WorldGuardAccessor worldGuardAccessor = new WorldGuardAccessor();
+
+    @Override
+    public void onLoad() {
+        worldGuardAccessor.load();
+    }
 
     @Override
     public void onEnable() {
@@ -22,5 +28,9 @@ public final class Battlewinner extends JavaPlugin {
 
     public static Battlewinner getInstance() {
         return instance;
+    }
+
+    public WorldGuardAccessor getWorldGuardAccessor() {
+        return worldGuardAccessor;
     }
 }

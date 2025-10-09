@@ -6,3 +6,8 @@ prefix: Battlewinner
 authors: [ BogTheMudWing ]
 description: 'A plugin for Wings of Fire: The New World that brings Battlewinner back from the dead.'
 website: https://woftnw.org
+dependencies:
+  server:
+    WorldGuard:
+      load: BEFORE
+      required: true
