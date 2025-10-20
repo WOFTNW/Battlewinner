@@ -22,36 +22,44 @@ public class GrapplingHookManager implements Listener {
     @EventHandler
     public void onPlayerFish(@NotNull PlayerFishEvent event) {
 
-        ItemStack mainHandItem = event.getPlayer().getInventory().getItemInMainHand();
-        ItemStack offHandItem = event.getPlayer().getInventory().getItemInOffHand();
+        final ItemStack mainHandItem = event.getPlayer().getInventory().getItemInMainHand();
+        final ItemStack offHandItem = event.getPlayer().getInventory().getItemInOffHand();
         // Make sure the player is holding a grappling hook
         if (isNotGrapplingHook(mainHandItem) && isNotGrapplingHook(offHandItem)) return;
 
-        if (event.getState().equals(PlayerFishEvent.State.FISHING)) {
-            FishHook hook = event.getHook();
+        final FishHook hook = event.getHook();
 
+        // Check if the player has cast the fishing rod
+        if (event.getState().equals(PlayerFishEvent.State.FISHING)) {
+
+            // This runs every tick and ensures the hook does not fall if it hits a block.
             BukkitRunnable hookTask = new BukkitRunnable() {
                 @Override
                 public void run() {
+                    // Cancel this task if the hook doesn't exist anymore
                     if (!hook.isValid()) this.cancel();
-                    Vector velocity = hook.getVelocity();
+                    final Vector velocity = hook.getVelocity();
+
+                    // The hook velocity X and Z become zero when it hits a block.
                     if (velocity.getX() == 0.0 && velocity.getZ() == 0.0) {
                         // setGravity(false) doesn't work
                         // setNoPhysics(true) doesn't work
+                        // 0.0298 is the magic number that keeps it in the air.
+                        // Found through trial and error.
                         hook.setVelocity(new Vector(0.0, 0.0298, 0.0));
                     }
                 }
             };
 
+            // Run the task we just created every tick.
             hookTask.runTaskTimer(Battlewinner.getInstance(), 0, 0);
         }
 
+        // Check if the player has reeled back the fishing rod
         if (event.getState().equals(PlayerFishEvent.State.REEL_IN) || event.getState().equals(PlayerFishEvent.State.IN_GROUND)) {
 
-            FishHook hook = event.getHook();
-
             boolean isTarget = false;
-            boolean isUniversal = !(isNotUniversalGrapple(offHandItem) && isNotUniversalGrapple(mainHandItem));
+            final boolean isUniversal = !(isNotUniversalGrapple(offHandItem) && isNotUniversalGrapple(mainHandItem));
 
             for (int x = -1; x < 2; x++) {
                 for (int y = -1; y < 2; y++) {
@@ -71,11 +79,16 @@ public class GrapplingHookManager implements Listener {
 
             if (!isTarget) return;
 
-            Location hookLocation = hook.getLocation();
-            Location playerLocation = event.getPlayer().getLocation();
-            double distance = hookLocation.distance(playerLocation);
+            final Location hookLocation = hook.getLocation();
+            final Location playerLocation = event.getPlayer().getLocation();
+            final double distance = hookLocation.distance(playerLocation);
 
-            Vector velocity = hookLocation.toVector().add(playerLocation.toVector().multiply(-1)).normalize().multiply(distance / 4);
+            // Take the hook location as a vector and subtract the player location as a vector to get the vector from the player to the hook.
+            Vector playerToHookVector = hookLocation.toVector().add(playerLocation.toVector().multiply(-1));
+
+            // Velocity power is calculated as "log(distance + 1)"
+            final Vector velocity = playerToHookVector.normalize().multiply(Math.log(distance + 1));
+            // Velocity is in meters (blocks) per tick (1/20 second).
             event.getPlayer().setVelocity(velocity);
         }
     }
